@@ -6,6 +6,12 @@ from urllib.parse import urlparse, parse_qs
 import pandas as pd
 from datetime import date
 
+# 如果需要指定代理，可以修改下面这个配置，如果不需要代理访问谷歌，留空就行
+proxies = {
+    # 'http': 'http://192.168.0.111:7890',
+    # 'https': 'http://192.168.0.111:7890',
+}
+
 def scrap_by_keyword(keyword):
     today = date.today()
     dir = './files/{}'.format(today)
@@ -26,7 +32,7 @@ def scrap_by_keyword(keyword):
     # return df
 
 def get_game_detail(detailLink):
-    x = requests.get(detailLink, headers = {'Accept-Language': 'zh-CN,en-US;q=0.7,en;q=0.3'})
+    x = requests.get(detailLink, headers = {'Accept-Language': 'zh-CN,en-US;q=0.7,en;q=0.3'}, proxies=proxies)
     soup = BeautifulSoup(x.text, 'html.parser')
 
     game_name = soup.select_one('h1.AHFaub > span').text # 游戏名
@@ -95,7 +101,7 @@ def get_game_detail(detailLink):
     
 
 def get_game_list(moreLink):
-    x = requests.get(moreLink, headers = {'Accept-Language': 'zh-CN,en-US;q=0.7,en;q=0.3'})
+    x = requests.get(moreLink, headers = {'Accept-Language': 'zh-CN,en-US;q=0.7,en;q=0.3'}, proxies=proxies)
     soup = BeautifulSoup(x.text, 'html.parser')
     game_blocks = soup.select('a.JC71ub')
     prefix = 'https://play.google.com'
@@ -105,7 +111,7 @@ def get_game_list(moreLink):
     return result
 
 def get_app_more_link(keyword):
-    x = requests.get('https://play.google.com/store/search', params = {'q': keyword}, headers = {'Accept-Language': 'zh-CN,en-US;q=0.7,en;q=0.3'})
+    x = requests.get('https://play.google.com/store/search', params = {'q': keyword}, headers = {'Accept-Language': 'zh-CN,en-US;q=0.7,en;q=0.3'}, proxies=proxies)
     soup = BeautifulSoup(x.text, 'html.parser')
     a = soup.select_one('div.W9yFB > a[href]')
     moreLink = 'https://play.google.com' + a['href']

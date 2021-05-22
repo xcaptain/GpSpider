@@ -23,21 +23,18 @@ class DownloadWorker(Thread):
                 self.queue.task_done()
 
 
-def scrap_all(keywords):
-    df = pd.DataFrame()
-    for keyword in keywords:
-        df = scrap_by_keyword(keyword, df)
-    engine = create_engine('sqlite:///game.db')
-    df.to_sql('games', con=engine, if_exists='append', index=False)
-
-
 def read_keywords():
-    with open('./words.txt') as reader:
+    with open('./words.txt', encoding='utf-8') as reader:
         s = reader.read()
         return s.strip().split()
 
 
-if __name__ == "__main__":
+def main():
+    today = date.today()
+    dir = './files/{}'.format(today)
+    if not os.path.isdir(dir):
+        os.mkdir(dir)
+
     queue = Queue()
     for x in range(8):
         worker = DownloadWorker(queue)
@@ -47,18 +44,20 @@ if __name__ == "__main__":
     for keyword in keywords:
         queue.put(keyword)
     queue.join()
-
-    today = date.today()
+    
     dbName = 'db/game_{}.db'.format(today)
     if os.path.isfile(dbName):
         os.remove(dbName)
     engine = create_engine('sqlite:///{}'.format(dbName))
     df = pd.DataFrame()
-    dir = './files/{}'.format(today)
+    
     for fileName in os.listdir(dir):
         print(fileName)
         if len(fileName) > 2:
             filepath = '{}/{}'.format(dir, fileName)
             df = df.append(pd.read_excel(filepath))
     df.to_sql('games', con=engine, if_exists='append', index=False)
-    df.to_excel('./files/{}.xlsx'.format(today))
+    df.to_excel('{}.xlsx'.format(today))
+
+if __name__ == "__main__":
+    main()
