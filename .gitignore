@@ -1,3 +1,4 @@
 db
 files
 *.xlsx
+__pycache__
