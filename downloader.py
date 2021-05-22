@@ -61,4 +61,4 @@ if __name__ == "__main__":
             filepath = '{}/{}'.format(dir, fileName)
             df = df.append(pd.read_excel(filepath))
     df.to_sql('games', con=engine, if_exists='append', index=False)
-    df.to_excel('{}.xlsx'.format(today))
+    df.to_excel('./files/{}.xlsx'.format(today))
