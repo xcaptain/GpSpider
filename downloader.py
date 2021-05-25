@@ -36,7 +36,7 @@ def main():
         os.mkdir(dir)
 
     queue = Queue()
-    for x in range(8):
+    for x in range(100):
         worker = DownloadWorker(queue)
         worker.daemon = True
         worker.start()

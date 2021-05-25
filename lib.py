@@ -21,15 +21,15 @@ def scrap_by_keyword(keyword):
     if os.path.isfile(file_path):
         return file_path
     moreLink = get_app_more_link(keyword)
-    # print(moreLink)
     game_links = get_game_list(moreLink)
     df = pd.DataFrame() 
     for game_link in game_links:
         game_detail = get_game_detail(game_link)
+        if game_detail == None:
+            continue
         print(game_detail)
         df = df.append(game_detail, ignore_index=True)
     df.to_excel(file_path)
-    # return df
 
 def get_game_detail(detailLink):
     x = requests.get(detailLink, headers = {'Accept-Language': 'zh-CN,en-US;q=0.7,en;q=0.3'}, proxies=proxies)
@@ -37,6 +37,8 @@ def get_game_detail(detailLink):
 
     game_name = soup.select_one('h1.AHFaub > span').text # 游戏名
     tab1 = soup.select('div.ZVWMWc > div > span > a')
+    if len(tab1) == 0:
+        return None
     company_name = tab1[0].text # 公司名
     cate_name = ''
     if len(tab1) == 2:
@@ -46,6 +48,11 @@ def get_game_detail(detailLink):
         star_num = soup.select_one('div.BHMmbe').text # 评分
     except:
         star_num = ''
+
+    try:
+        icon = soup.select_one('div.xSyT2c > img')['src']
+    except:
+        icon = ''
     
     try:
         people_num = soup.select_one('span.AYi5wd').text # 评分人数
@@ -97,6 +104,8 @@ def get_game_detail(detailLink):
         '当前版本': current_version,
         '包名': package_id,
         '联系方式': contact,
+        '游戏链接': detailLink,
+        '游戏icon': icon,
     }
     
 
