@@ -12,13 +12,14 @@ class DownloadWorker(Thread):
     def __init__(self, queue):
         Thread.__init__(self)
         self.queue = queue
+        self.today = date.today()
 
     def run(self):
         while True:
             # Get the work from the queue and expand the tuple
             keyword = self.queue.get()
             try:
-                scrap_by_keyword(keyword)
+                scrap_by_keyword(keyword, self.today)
             finally:
                 self.queue.task_done()
 
@@ -57,7 +58,7 @@ def main():
             filepath = '{}/{}'.format(dir, fileName)
             df = df.append(pd.read_excel(filepath))
     df.to_sql('games', con=engine, if_exists='append', index=False)
-    df.to_excel('{}.xlsx'.format(today))
+    df.to_excel('{}.xlsx'.format(dir))
 
 if __name__ == "__main__":
     main()

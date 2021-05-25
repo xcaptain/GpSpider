@@ -4,7 +4,6 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, parse_qs
 import pandas as pd
-from datetime import date
 
 # 如果需要指定代理，可以修改下面这个配置，如果不需要代理访问谷歌，留空就行
 proxies = {
@@ -12,8 +11,8 @@ proxies = {
     # 'https': 'http://192.168.0.111:7890',
 }
 
-def scrap_by_keyword(keyword):
-    today = date.today()
+def scrap_by_keyword(keyword, today):
+    # today = date.today()
     dir = './files/{}'.format(today)
     if not os.path.isdir(dir):
         os.mkdir(dir)
